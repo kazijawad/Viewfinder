@@ -28,8 +28,8 @@ class ImageLoader(object):
 
         wordFile = open(filePath + "words.txt")
         chars = set()
-        bad_samples = []
-        bad_samples_reference = ["a01-117-05-02.png", "r06-022-03-05.png"]
+        badSamples = []
+        badSampleReferences = ["a01-117-05-02.png", "r06-022-03-05.png"]
 
         # Retrieve name of each file and its expected outcome
         for line in wordFile:
@@ -51,16 +51,16 @@ class ImageLoader(object):
 
             # Check for empty image
             if not os.path.getsize(fileName):
-                bad_samples.append(lines[0] + ".png")
+                badSamples.append(lines[0] + ".png")
 
             self.samples.append(Sample(gtText, fileName))
 
         self.chars = sorted([chars])
 
         # Print bad files that are not marked with issues
-        if set(bad_samples) != set(bad_samples_reference):
-            print(f"[WARNING] Damaged Files Found:", bad_samples)
-            print(f"[INFO] Expected Damaged FIles:", bad_samples_reference)
+        if set(badSamples) != set(badSampleReferences):
+            print(f"[WARNING] Damaged Files Found:", badSamples)
+            print(f"[INFO] Expected Damaged FIles:", badSampleReferences)
 
         # Split into training set and validation set (95%)
         splitIndex = int(0.95 * len(self.samples))
