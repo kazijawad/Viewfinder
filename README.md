@@ -2,8 +2,6 @@
 
 Viewfinder is an optical character recognition program that analyzes written code and executes the code. The user will have the option to upload an image or grab screenshots from a live video feed. The screenshot/image will be analyzed, which can then be executed or tested against.
 
-![Screenshot](https://github.com/kazijawad/Viewfinder/blob/master/screenshot.png)
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
