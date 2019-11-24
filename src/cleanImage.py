@@ -1,12 +1,17 @@
 import numpy as np
 import cv2 as cv
 
-def cleanImg(img, imgSize):
-    '''Remove noise from image and gray-scale it for the model'''
-    
+# Remove noise from image and gray-scale it for the model
+def cleanImg(img, imgSize, augmentData=False):    
     # Handle damaged files in the dataset
     if img is None:
         img = np.zeroes([imgSize[1], imgSize[0]])
+
+    # Increase dataset size by horizontal stretching images
+    if augmentData:
+        stretch = random.random() - 0.5
+        widthStretch = max(int(img.shape[1] * (1 + stretch)), 1)
+        img = cv.resize(img, (widthStretch, img.shape[0]))
 
     targetWidth, targetHeight = imgSize
     height, width = img
