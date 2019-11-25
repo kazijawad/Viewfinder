@@ -20,11 +20,11 @@ class Batch(object):
 # Handles loading the image into the model
 class ImageLoader(object):
     def __init__(self, filePath, batchSize, imgSize, maxTextLength):
-        self.augmentData = False
         self.batchSize = batchSize
         self.imgSize = imgSize
-        self.samples = []
+        self.augmentData = False
         self.currentIndex = 0
+        self.samples = []
 
         wordFile = open(filePath + "words.txt")
         chars = set()
@@ -52,10 +52,9 @@ class ImageLoader(object):
             # Check for empty image
             if not os.path.getsize(fileName):
                 badSamples.append(lines[0] + ".png")
+                continue
 
             self.samples.append(Sample(gtText, fileName))
-
-        self.chars = sorted([chars])
 
         # Print bad files that are not marked with issues
         if set(badSamples) != set(badSampleReferences):
@@ -77,6 +76,8 @@ class ImageLoader(object):
         # Initialize training set
         self.trainingSet()
 
+        self.chars = sorted([chars])
+
     # Account for the cost of labels that repeat for images
     def truncateLabel(self, text, maxTextLength):
         cost = 0
@@ -88,7 +89,6 @@ class ImageLoader(object):
             
             if cost > maxTextLength:
                 return text[:index]
-
         return text
 
     # Load image for training

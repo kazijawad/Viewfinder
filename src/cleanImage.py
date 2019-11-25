@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import cv2 as cv
 
@@ -5,7 +6,7 @@ import cv2 as cv
 def cleanImg(img, imgSize, augmentData=False):    
     # Handle damaged files in the dataset
     if img is None:
-        img = np.zeroes([imgSize[1], imgSize[0]])
+        img = np.zeros([imgSize[1], imgSize[0]])
 
     # Increase dataset size by horizontal stretching images
     if augmentData:
@@ -38,8 +39,6 @@ def cleanImg(img, imgSize, augmentData=False):
     std = std[0][0]
     img = img - mean
     if std > 0:
-        img = img / s
-    else:
-        img
+        img = img / std
 
     return img
