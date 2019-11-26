@@ -1,4 +1,4 @@
-# Viewfinder - A Handwritten Code Analysis Tool
+# Viewfinder - A Handwritten Math Problem Solver
 
 from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk

@@ -1,7 +1,9 @@
+# Model Design: https://towardsdatascience.com/build-a-handwritten-text-recognition-system-using-tensorflow-2326a3487cd5
+
 import numpy as np
 import tensorflow as tf
 
-# Simple Tensorflow model for Handwritten Text Recognition
+# Simple Tensorflow Model for Handwritten Text Recognition
 class Model(object):
     batchSize = 50
     imgSize = (128, 32)
@@ -143,6 +145,7 @@ class Model(object):
 
         return session, saver
 
+    # Creates a sparse for training purposes
     def generateSparse(self, texts):
         indexes = []
         values = []
@@ -176,6 +179,7 @@ class Model(object):
             text.append(str().join(labelChars))
         return text
 
+    # Trains neural network
     def trainBatch(self, batch):
         batchItemCount = len(batch.imgs)
         sparse = self.generateSparse(batch.gtTexts)
@@ -201,9 +205,7 @@ class Model(object):
         _, loss = self.session.run(fetches, feed_dict=feed)
         return loss
 
-    def dumpOutput(self, rnn):
-        pass
-
+    # Feeds input into a trained neural network for a result
     def detectBatch(self, batch):
         batchItemCount = len(batch.imgs)
         evals = [self.decoder] + []
@@ -218,6 +220,7 @@ class Model(object):
         text = self.extractOutput(decoded, batchItemCount)
         return text
 
+    # Saves a snapshot of the model as a file
     def save(self):
         self.snapCount += 1
         self.saver.save(self.session, "../model/snapshot", global_step=self.snapCount)

@@ -45,6 +45,7 @@ def train(model, loader):
             print(f"No improvements since {earlyStop} epochs. Training stopped.")
             break
 
+# Validates a small percentage of the dataset against the neural network
 def validate(model, loader):
     print("Validating Neural Network")
     loader.validationSet()
@@ -77,6 +78,7 @@ def validate(model, loader):
     print(f"Character Error Rate: {charErrorRate * 100}. Accuracy: {accuracy * 100}")
     return charErrorRate
 
+# Detects handwritten text using a trained neural network
 def detect(model, imgPath):
     img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
     cleanedImg = cleanImage(img, Model.imgSize)
@@ -84,6 +86,7 @@ def detect(model, imgPath):
     text = model.detectBatch(batch)
     return text
 
+# Rotates between training the model or using the model --> Mainly for testing purposes
 def main(training=True):
     if training:
         loader = ImageLoader("../data/", Model.batchSize, Model.imgSize, Model.maxTextLength)

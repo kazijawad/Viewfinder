@@ -1,6 +1,6 @@
 # Viewfinder
 
-Viewfinder is an optical character recognition program that analyzes written code and executes the code. The user will have the option to upload an image, which will be analyzed and executed.
+Viewfinder is an optical character recognition program that analyzes written math problems and solves for the variables. The user will have the option to upload an image, which can then be solved for through a trained neural network.
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ git clone https://github.com/kazijawad/Viewfinder.git
 2. Change directory and run the python script
 ```
 cd src/
-python main.py
+python3 main.py
 ```
 
 ## Built With
@@ -47,3 +47,4 @@ Kazi Jawad
 * [15-112 Fundamentals of Programming and Computer Science](https://www.cs.cmu.edu/~112)
 * [3Blue1Brown](https://www.3blue1brown.com/neural-networks)
 * [Harald Scheidl](https://towardsdatascience.com/2326a3487cd5)
+* [IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
