@@ -164,8 +164,8 @@ class Model(object):
         encodedLabels = [[] for _ in range(batchSize)]
         output = ctc[0][0]
         indexes = { batch: [] for batch in range(batchSize) }
-        for index1, index2 in enumerate(output.indexes):
-            label = output.values(index1)
+        for index1, index2 in enumerate(output.indices):
+            label = output.values[index1]
             batchItem = index2[0]
             encodedLabels[batchItem].append(label)
         

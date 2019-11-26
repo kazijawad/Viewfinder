@@ -81,7 +81,7 @@ def detect(model, imgPath):
     img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
     cleanedImg = cleanImg(img, Model.imgSize)
     batch = Batch(None, [cleanedImg])
-    text = model.detectBatch(batch, True)
+    text = model.detectBatch(batch)
     return text
 
 def main(training=False):
@@ -91,8 +91,8 @@ def main(training=False):
         train(model, loader)
     else:
         model = Model(open("../model/chars.txt").read(), mustRestore=True)
-        recognizedText = detect(model, "../data/test.png")
+        recognizedText = detect(model, "../data/print.jpg")
         print(recognizedText)
 
 if __name__ == "__main__":
-    main(training=True)
+    main(training=False)
