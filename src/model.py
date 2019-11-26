@@ -15,13 +15,13 @@ class Model(object):
         self.snapCount = 0
 
         # To determine whether to use normalization over a batch
-        self.isTraining = tf.keras.backend.placeholder(tf.bool, name="isTraining")
+        self.isTraining = tf.placeholder(tf.bool, name="isTraining")
 
         # Input image batch
-        self.inputImgs = tf.keras.backend.placeholder(tf.float32,
-                                                      shape=(None,
-                                                             Model.imgSize[0],
-                                                             Model.imgSize[1]))
+        self.inputImgs = tf.placeholder(tf.float32,
+                                        shape=(None,
+                                               Model.imgSize[0],
+                                               Model.imgSize[1]))
 
         # Setup different layers of the neural network
         self.setupCNN()
@@ -30,10 +30,10 @@ class Model(object):
 
         # Setup optimizations
         self.trainedBatches = 0
-        self.learningRate = tf.keras.backend.placeholder(tf.float32, shape=[])
-        self.updateOps = tf.compat.v1.get_collection(tf.GraphKeys.UPDATE_OPS)
+        self.learningRate = tf.placeholder(tf.float32, shape=[])
+        self.updateOps = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.compat.v1.control_dependencies(self.updateOps):
-            self.optimizer = tf.compat.v1.train.RMSPropOptimizer(self.learningRate).minimize(self.loss)
+            self.optimizer = tf.train.RMSPropOptimizer(self.learningRate).minimize(self.loss)
 
         self.session, self.saver = self.setupTF()
 
@@ -152,7 +152,7 @@ class Model(object):
             labels = [self.chars.index(char) for char in text]
             if len(labels) > shape[1]:
                 shape[1] = len(labels)
-            
+
             for index, label in enumerate(labels):
                 indexes.append([batchItem, index])
                 values.append(label)
@@ -190,7 +190,7 @@ class Model(object):
             else:
                 rate = 0.0001
 
-        evals = [self.optimizer, self.loss]
+        fetches = [self.optimizer, self.loss]
         feed = {
             self.inputImgs: batch.imgs,
             self.gtTexts: sparse,
@@ -199,14 +199,25 @@ class Model(object):
             self.isTraining: True
         }
 
-        _, loss = self.session.run(evals, feed)
+        _, loss = self.session.run(fetches, feed_dict=feed)
         return loss
 
     def dumpOutput(self, rnn):
         pass
 
-    def inferBatch(self, batch):
-        pass
+    def detectBatch(self, batch):
+        batchItemCount = len(batch.imgs)
+        evals = [self.decoder] + []
+        feed = {
+            self.inputImgs: batch.imgs,
+            self.sequenceLength: [Model.maxTextLength] * batchItemCount,
+            self.isTraining: False
+        }
+
+        result = self.session.run(evals, feed)
+        decoded = result[0]
+        text = self.extractOutput(decoded, batchItemCount)
+        return text
 
     def save(self):
         self.snapCount += 1

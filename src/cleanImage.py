@@ -15,7 +15,7 @@ def cleanImg(img, imgSize, augmentData=False):
         img = cv.resize(img, (widthStretch, img.shape[0]))
 
     targetWidth, targetHeight = imgSize
-    height, width = img
+    height, width = img.shape
 
     fx = width / targetWidth
     fy = height / targetHeight

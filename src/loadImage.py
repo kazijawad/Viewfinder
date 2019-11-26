@@ -47,7 +47,7 @@ class ImageLoader(object):
 
             # GT text start at column 9
             gtText = self.truncateLabel(" ".join(lines[8:]), maxTextLength)
-            chars = chars.union(set([gtText]))
+            chars = chars.union(set(list(gtText)))
 
             # Check for empty image
             if not os.path.getsize(fileName):
@@ -67,8 +67,8 @@ class ImageLoader(object):
         self.validationSamples = self.samples[splitIndex:]
 
         # Create lists for the words
-        self.trainingWords = [sample.gtText for sample in self.trainingSamples]
-        self.validationWords = [sample.gtText for sample in self.validationSamples]
+        self.trainingWords = [sample.gtTexts for sample in self.trainingSamples]
+        self.validationWords = [sample.gtTexts for sample in self.validationSamples]
 
         # Amount of samples per epoch
         self.trainingSamplesPerEpoch = 25000
@@ -76,17 +76,16 @@ class ImageLoader(object):
         # Initialize training set
         self.trainingSet()
 
-        self.chars = sorted([chars])
+        self.chars = sorted(list(chars))
 
     # Account for the cost of labels that repeat for images
     def truncateLabel(self, text, maxTextLength):
         cost = 0
         for index in range(len(text)):
-            if (index != 0) and (text[index] == text[index - 1]):
+            if index != 0 and text[index] == text[index - 1]:
                 cost += 2
             else:
                 cost += 1
-            
             if cost > maxTextLength:
                 return text[:index]
         return text
@@ -118,7 +117,7 @@ class ImageLoader(object):
         gtTexts = []
         imgs = []
         for index in range(self.currentIndex, self.currentIndex + self.batchSize):
-            gtTexts.append(self.samples[index])
+            gtTexts.append(self.samples[index].gtTexts)
             img = cv.imread(self.samples[index].filePath, cv.IMREAD_GRAYSCALE)
             cleanedImg = cleanImg(img, self.imgSize, self.augmentData)
             imgs.append(cleanedImg)
