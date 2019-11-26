@@ -1,9 +1,9 @@
 import cv2 as cv
 import editdistance
 
-from loadImage import ImageLoader, Batch
-from cleanImage import cleanImg
-from model import Model
+from classes.ImageLoader import cleanImage, ImageLoader
+from classes.Batch import Batch
+from classes.Model import Model
 
 # Trains the neural network using the IAM dataset
 def train(model, loader):
@@ -79,7 +79,7 @@ def validate(model, loader):
 
 def detect(model, imgPath):
     img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
-    cleanedImg = cleanImg(img, Model.imgSize)
+    cleanedImg = cleanImage(img, Model.imgSize)
     batch = Batch(None, [cleanedImg])
     text = model.detectBatch(batch)
     return text
@@ -95,4 +95,4 @@ def main(training=False):
         print(recognizedText)
 
 if __name__ == "__main__":
-    main(training=False)
+    main(training=True)

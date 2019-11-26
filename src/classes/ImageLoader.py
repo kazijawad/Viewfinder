@@ -3,19 +3,49 @@ import random
 import numpy as np
 import cv2 as cv
 
-from cleanImage import cleanImg
+from Sample import Sample
+from Batch import Batch
 
-# Handles each sample of imgs and their labeling
-class Sample(object):
-    def __init__(self, gtTexts, filePath):
-        self.gtTexts = gtTexts
-        self.filePath = filePath
+# Remove noise from image and gray-scale it for the model
+def cleanImage(img, imgSize, augmentData=False):    
+    # Handle damaged files in the dataset
+    if img is None:
+        img = np.zeros([imgSize[1], imgSize[0]])
 
-# Handles each batch of samples
-class Batch(object):
-    def __init__(self, gtTexts, imgs):
-        self.gtTexts = gtTexts
-        self.imgs = np.stack(imgs, axis=0)
+    # Increase dataset size by horizontal stretching images
+    if augmentData:
+        stretch = random.random() - 0.5
+        widthStretch = max(int(img.shape[1] * (1 + stretch)), 1)
+        img = cv.resize(img, (widthStretch, img.shape[0]))
+
+    targetWidth, targetHeight = imgSize
+    height, width = img.shape
+
+    fx = width / targetWidth
+    fy = height / targetHeight
+    f = max(fx, fy)
+
+    # Size scales to f with a minimum 1 and max of target width/height
+    newSize = (max(min(targetWidth, int(width / f)), 1),
+               max(min(targetHeight, int(height / f)), 1))
+
+    # Create the new sized image
+    img = cv.resize(img, newSize)
+    targetImg = np.ones([targetHeight, targetWidth]) * 256
+    targetImg[0:newSize[1], 0:newSize[0]] = img
+
+    # Tensorflow requires a transposed image
+    img = cv.transpose(targetImg)
+
+    # Normalize the image
+    mean, std = cv.meanStdDev(img)
+    mean = mean[0][0]
+    std = std[0][0]
+    img = img - mean
+    if std > 0:
+        img = img / std
+
+    return img
 
 # Handles loading the image into the model
 class ImageLoader(object):
@@ -119,7 +149,7 @@ class ImageLoader(object):
         for index in range(self.currentIndex, self.currentIndex + self.batchSize):
             gtTexts.append(self.samples[index].gtTexts)
             img = cv.imread(self.samples[index].filePath, cv.IMREAD_GRAYSCALE)
-            cleanedImg = cleanImg(img, self.imgSize, self.augmentData)
+            cleanedImg = cleanImage(img, self.imgSize, self.augmentData)
             imgs.append(cleanedImg)
 
         self.currentIndex += self.batchSize

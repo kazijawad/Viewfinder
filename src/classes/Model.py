@@ -131,7 +131,7 @@ class Model(object):
     def setupTF(self):
         session = tf.Session()
         saver = tf.train.Saver(max_to_keep=1)
-        snapshot = tf.train.latest_checkpoint("../model/")
+        snapshot = tf.train.latest_checkpoint("../../model/")
 
         if self.mustRestore and not snapshot:
             raise Exception("No saved model found")
@@ -163,7 +163,6 @@ class Model(object):
     def extractOutput(self, ctc, batchSize):
         encodedLabels = [[] for _ in range(batchSize)]
         output = ctc[0][0]
-        indexes = { batch: [] for batch in range(batchSize) }
         for index1, index2 in enumerate(output.indices):
             label = output.values[index1]
             batchItem = index2[0]
@@ -221,4 +220,4 @@ class Model(object):
 
     def save(self):
         self.snapCount += 1
-        self.saver.save(self.session, "../model/snapshot", global_step=self.snapCount)
+        self.saver.save(self.session, "../../model/snapshot", global_step=self.snapCount)
