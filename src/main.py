@@ -1,6 +1,6 @@
 # Viewfinder - A Handwritten Code Analysis Tool
 
-from tkinter import Tk, Canvas, filedialog
+from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk
 import cv2 as cv
 
@@ -96,18 +96,51 @@ def loadModeRedrawAll(canvas, state):
                        font="Helvetica 21 normal",
                        fill="#6fb98f")
 
-def redrawAll(canvas, state):
+def editModeRedrawAll(root, canvas, state):
+    # Draw Background
+    canvas.create_rectangle(0, 0, state.width, state.height,
+                            fill="#004445")
+
+    # Draw Textbox
+    textbox = Text(root)
+    textbox.insert("end", state.text)
+    canvas.create_window(state.margin, state.margin,
+                         window=textbox, anchor="nw")
+    state.text = textbox.get("1.0", "end")
+
+    # Draw Execute Button
+    canvas.create_rectangle(state.margin, state.height - state.margin - 60,
+                            state.margin + 240, state.height - state.margin,
+                            fill="#2c7872", outline="")
+    canvas.create_text(state.margin + 120, state.height - state.margin - 30,
+                       text="Execute Code", font="Helvetica 21 bold",
+                       fill="#ffd800")
+
+def resultModeRedrawAll(canvas, state):
+    # Draw Background
+    canvas.create_rectangle(0, 0, state.width, state.height,
+                            fill="#004445")
+
+    # Draw Execution
+    canvas.create_text(state.width // 2, state.height // 2,
+                       text={exec('"Hi"')}, font="Helvetica 21 bold",
+                       fill="#ffd800")
+
+def redrawAll(root, canvas, state):
     canvas.delete("all")
     if state.mode == "start":
         startModeRedrawAll(canvas, state)
     elif state.mode == "upload":
         uploadModeRedrawAll(canvas, state)
     elif state.mode == "load":
-        analyzeText(state)
         loadModeRedrawAll(canvas, state)
+    elif state.mode == "edit":
+        editModeRedrawAll(root, canvas, state)
+    elif state.mode == "result":
+        resultModeRedrawAll(canvas, state)
 
-def timerFired(canvas, state):
-    redrawAll(canvas, state)
+def timerFired(root, canvas, state):
+    redrawAll(root, canvas, state)
     canvas.after(state.timerDelay, timerFired, canvas, state)
 
 # Controller
@@ -129,14 +162,24 @@ def uploadMousePressed(event, state):
           and event.y > state.height - state.margin - 60
           and event.y < state.height - state.margin
           and state.file != None):
-        state.mode = "load"
+        analyzeText(state)
+        state.mode = "edit"
 
-def mousePressed(canvas, event, state):
+def executeMousePressed(root, canvas, event, state):
+    if (event.x > state.margin
+        and event.x < state.margin + 240
+        and event.y > state.height - state.margin - 60
+        and event.y < state.height - state.margin):
+        state.mode = "result"
+
+def mousePressed(root, canvas, event, state):
     if state.mode == "start":
         startMousePressed(event, state)
     elif state.mode == "upload":
         uploadMousePressed(event, state)
-    redrawAll(canvas, state)
+    elif state.mode == "edit":
+        executeMousePressed(root, canvas, event, state)
+    redrawAll(root, canvas, state)
 
 def analyzeText(state):
     model = Model(open("../model/chars.txt").read(), mustRestore=True)
@@ -145,7 +188,6 @@ def analyzeText(state):
     batch = Batch(None, [cleanedImg])
     text = model.detectBatch(batch)
     state.text = text[0]
-    state.mode = "edit"
 
 def main():
     # Create Instance and State
@@ -160,10 +202,10 @@ def main():
     canvas.pack()
 
     # Event Handling
-    root.bind("<Button-1>", lambda event: mousePressed(canvas, event, state))
+    root.bind("<Button-1>", lambda event: mousePressed(root, canvas, event, state))
 
     # Loop
-    timerFired(canvas, state)
+    timerFired(root, canvas, state)
     root.mainloop()
 
 if __name__ == "__main__":
