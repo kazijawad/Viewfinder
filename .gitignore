@@ -131,5 +131,8 @@ dmypy.json
 # macOS
 .DS_STORE
 
-# Project related
-data/
+# Project Related
+checkpoint
+snapshot-38.data-00000-of-00001
+snapshot-38.index
+snapshot-38.meta
