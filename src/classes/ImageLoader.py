@@ -3,8 +3,8 @@ import random
 import numpy as np
 import cv2 as cv
 
-from Sample import Sample
-from Batch import Batch
+from classes.Sample import Sample
+from classes.Batch import Batch
 
 # Remove noise from image and gray-scale it for the model
 def cleanImage(img, imgSize, augmentData=False):    

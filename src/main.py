@@ -2,6 +2,11 @@
 
 from tkinter import Tk, Canvas, filedialog
 import tkinter as tk
+import cv2 as cv
+
+from classes.Model import Model
+from classes.ImageLoader import cleanImage
+from classes.Batch import Batch
 
 # Model
 class State(object):
@@ -74,12 +79,32 @@ def uploadModeRedrawAll(canvas, state):
                        text="Analyze Image", font="Helvetica 21 bold",
                        fill="#ffd800")
 
+def loadModeRedrawAll(canvas, state):
+    # Draw Background
+    canvas.create_rectangle(0, 0, state.width, state.height,
+                            fill="#004445")
+
+    # Draw Heading
+    canvas.create_text(state.width // 2, state.height // 2,
+                       text="Analyzing Handwritten Text",
+                       font="Helvetica 48 bold",
+                       fill="#ffd800")
+
+    # Draw Subheading
+    canvas.create_text(state.width // 2, state.height // 2 + 75,
+                       text="This may take awhile...",
+                       font="Helvetica 21 normal",
+                       fill="#6fb98f")
+
 def redrawAll(canvas, state):
     canvas.delete("all")
     if state.mode == "start":
         startModeRedrawAll(canvas, state)
     elif state.mode == "upload":
         uploadModeRedrawAll(canvas, state)
+    elif state.mode == "load":
+        analyzeText(state)
+        loadModeRedrawAll(canvas, state)
 
 def timerFired(canvas, state):
     redrawAll(canvas, state)
@@ -92,12 +117,19 @@ def startMousePressed(event, state):
         state.mode = "upload"
 
 def uploadMousePressed(event, state):
-    if (event.x > state.width // 2 - 120 and event.x < state.width // 2 + 120 and
-        event.y > state.height // 2 - 80 and event.y < state.height // 2 - 20):
+    if (event.x > state.width // 2 - 120
+        and event.x < state.width // 2 + 120
+        and event.y > state.height // 2 - 80
+        and event.y < state.height // 2 - 20):
         file = filedialog.askopenfilename(initialdir="/Desktop", title="Select Image")
         if file != "":
-            print(file)
             state.file = file
+    elif (event.x > state.width // 2 - 120
+          and event.x < state.width // 2 + 120
+          and event.y > state.height - state.margin - 60
+          and event.y < state.height - state.margin
+          and state.file != None):
+        state.mode = "load"
 
 def mousePressed(canvas, event, state):
     if state.mode == "start":
@@ -105,6 +137,15 @@ def mousePressed(canvas, event, state):
     elif state.mode == "upload":
         uploadMousePressed(event, state)
     redrawAll(canvas, state)
+
+def analyzeText(state):
+    model = Model(open("../model/chars.txt").read(), mustRestore=True)
+    img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
+    cleanedImg = cleanImage(img, Model.imgSize)
+    batch = Batch(None, [cleanedImg])
+    text = model.detectBatch(batch)
+    state.text = text[0]
+    state.mode = "edit"
 
 def main():
     # Create Instance and State

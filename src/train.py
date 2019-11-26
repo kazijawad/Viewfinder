@@ -84,7 +84,7 @@ def detect(model, imgPath):
     text = model.detectBatch(batch)
     return text
 
-def main(training=False):
+def main(training=True):
     if training:
         loader = ImageLoader("../data/", Model.batchSize, Model.imgSize, Model.maxTextLength)
         model = Model(loader.chars)
@@ -95,4 +95,4 @@ def main(training=False):
         print(recognizedText)
 
 if __name__ == "__main__":
-    main(training=True)
+    main()

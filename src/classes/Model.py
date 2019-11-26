@@ -131,7 +131,7 @@ class Model(object):
     def setupTF(self):
         session = tf.Session()
         saver = tf.train.Saver(max_to_keep=1)
-        snapshot = tf.train.latest_checkpoint("../../model/")
+        snapshot = tf.train.latest_checkpoint("../model/")
 
         if self.mustRestore and not snapshot:
             raise Exception("No saved model found")
@@ -220,4 +220,4 @@ class Model(object):
 
     def save(self):
         self.snapCount += 1
-        self.saver.save(self.session, "../../model/snapshot", global_step=self.snapCount)
+        self.saver.save(self.session, "../model/snapshot", global_step=self.snapCount)
