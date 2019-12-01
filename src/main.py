@@ -79,65 +79,12 @@ def uploadModeRedrawAll(canvas, state):
                        text="Analyze Image", font="Helvetica 21 bold",
                        fill="#ffd800")
 
-def loadModeRedrawAll(canvas, state):
-    # Draw Background
-    canvas.create_rectangle(0, 0, state.width, state.height,
-                            fill="#004445")
-
-    # Draw Heading
-    canvas.create_text(state.width // 2, state.height // 2,
-                       text="Analyzing Handwritten Text",
-                       font="Helvetica 48 bold",
-                       fill="#ffd800")
-
-    # Draw Subheading
-    canvas.create_text(state.width // 2, state.height // 2 + 75,
-                       text="This may take awhile...",
-                       font="Helvetica 21 normal",
-                       fill="#6fb98f")
-
-def editModeRedrawAll(root, canvas, state):
-    # Draw Background
-    canvas.create_rectangle(0, 0, state.width, state.height,
-                            fill="#004445")
-
-    # Draw Textbox
-    textbox = Text(root)
-    textbox.insert("end", state.text)
-    canvas.create_window(state.margin, state.margin,
-                         window=textbox, anchor="nw")
-    state.text = textbox.get("1.0", "end")
-
-    # Draw Execute Button
-    canvas.create_rectangle(state.margin, state.height - state.margin - 60,
-                            state.margin + 240, state.height - state.margin,
-                            fill="#2c7872", outline="")
-    canvas.create_text(state.margin + 120, state.height - state.margin - 30,
-                       text="Execute Code", font="Helvetica 21 bold",
-                       fill="#ffd800")
-
-def resultModeRedrawAll(canvas, state):
-    # Draw Background
-    canvas.create_rectangle(0, 0, state.width, state.height,
-                            fill="#004445")
-
-    # Draw Execution
-    canvas.create_text(state.width // 2, state.height // 2,
-                       text={exec('"Hi"')}, font="Helvetica 21 bold",
-                       fill="#ffd800")
-
 def redrawAll(root, canvas, state):
     canvas.delete("all")
     if state.mode == "start":
         startModeRedrawAll(canvas, state)
     elif state.mode == "upload":
         uploadModeRedrawAll(canvas, state)
-    elif state.mode == "load":
-        loadModeRedrawAll(canvas, state)
-    elif state.mode == "edit":
-        editModeRedrawAll(root, canvas, state)
-    elif state.mode == "result":
-        resultModeRedrawAll(canvas, state)
 
 def timerFired(root, canvas, state):
     redrawAll(root, canvas, state)
@@ -163,22 +110,12 @@ def uploadMousePressed(event, state):
           and event.y < state.height - state.margin
           and state.file != None):
         analyzeText(state)
-        state.mode = "edit"
-
-def executeMousePressed(root, canvas, event, state):
-    if (event.x > state.margin
-        and event.x < state.margin + 240
-        and event.y > state.height - state.margin - 60
-        and event.y < state.height - state.margin):
-        state.mode = "result"
 
 def mousePressed(root, canvas, event, state):
     if state.mode == "start":
         startMousePressed(event, state)
     elif state.mode == "upload":
         uploadMousePressed(event, state)
-    elif state.mode == "edit":
-        executeMousePressed(root, canvas, event, state)
     redrawAll(root, canvas, state)
 
 def analyzeText(state):
