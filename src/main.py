@@ -123,7 +123,7 @@ def analyzeText(state):
     img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
     img = prepareImage(img, Model.imgSize)
     batch = Batch([img], None)
-    text = model.detectBatch(batch)
+    text = model.validateBatch(batch)
     state.text = text[0]
 
 def main():

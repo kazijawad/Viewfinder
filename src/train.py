@@ -1,7 +1,7 @@
 import cv2 as cv
 import editdistance
 
-from classes.ImageLoader import prepareImage, ImageLoader
+from classes.ImageLoader import ImageLoader
 from classes.Batch import Batch
 from classes.Model import Model
 
@@ -57,7 +57,7 @@ def validate(model, loader):
         iterationInfo = loader.getIteration()
         print("Batch:", iterationInfo[0], "/", iterationInfo[1])
         batch = loader.getNext()
-        text = model.detectBatch(batch)
+        text = model.validateBatch(batch)
 
         for index in range(len(text)):
             totalWordCount += 1

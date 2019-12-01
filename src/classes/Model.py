@@ -212,7 +212,7 @@ class Model(object):
         return loss
 
     # Feeds validation batch into a trained neural network
-    def detectBatch(self, batch):
+    def validateBatch(self, batch):
         batchItemCount = len(batch.imgs)
         evals = [self.decoder] + []
         feed = {

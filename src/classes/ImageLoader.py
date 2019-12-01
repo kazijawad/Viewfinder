@@ -33,7 +33,6 @@ def prepareImage(img, imgSize, augmentData=False):
         widthStretch = max(int(img.shape[1] * (1 + stretch)), 1)
         img = cv.resize(img, (widthStretch, img.shape[0]))
 
-
     '''
     For tensorflow to properly handle each image that is given to the neural
     network, it must be the same height and width. To be consistent, we need
