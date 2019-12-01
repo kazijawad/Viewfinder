@@ -61,16 +61,16 @@ def validate(model, loader):
 
         for index in range(len(text)):
             totalWordCount += 1
-            if batch.gtTexts[index] == text[index]:
+            if batch.targets[index] == text[index]:
                 okWordCount += 1
 
-            distance = editdistance.eval(text[index], batch.gtTexts[index])
+            distance = editdistance.eval(text[index], batch.targets[index])
             charErrorCount += distance
-            charTotalCount += len(batch.gtTexts[index])
+            charTotalCount += len(batch.targets[index])
             if distance == 0:
                 print("OK")
             else:
-                print(f"ERROR: {distance}", "\"" + batch.gtTexts[index] + "\"",
+                print(f"ERROR: {distance}", "\"" + batch.targets[index] + "\"",
                       "->", "\"" + text[index] + "\"")
 
     charErrorRate = charErrorCount / charTotalCount

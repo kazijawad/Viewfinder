@@ -94,11 +94,11 @@ class ImageLoader(object):
             later on as a list for all possible outcomes the image can yield.
             '''
             lines = line.strip().split(" ")
-            filePaths = lines[0].split("-")
-            filePath = (filePath + "words/" +
-                        filePaths[0] + "/" +
-                        filePaths[0] + "-" +
-                        filePaths[1] + "/" +
+            fileNames = lines[0].split("-")
+            fileName = (filePath + "words/" +
+                        fileNames[0] + "/" +
+                        fileNames[0] + "-" +
+                        fileNames[1] + "/" +
                         lines[0] + ".png")
             target = self.truncateLabel(" ".join(lines[8:]), maxTextLength)
             chars = chars.union(set(list(target)))
@@ -107,10 +107,10 @@ class ImageLoader(object):
             We don't want to include empty images to our sample dataset.
             These files will be ignored and not used throughout training.
             '''
-            if not os.path.getsize(filePath):
+            if not os.path.getsize(fileName):
                 continue
 
-            self.samples.append(Sample(filePath, target))
+            self.samples.append(Sample(fileName, target))
 
         '''
         In supervised learning, we want to split our dataset into a training

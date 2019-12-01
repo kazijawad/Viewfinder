@@ -111,13 +111,13 @@ class Model(object):
     # Returns the final evaluation of the model, a CTC loss and decoder
     def setupCTC(self):
         self.ctc = tf.transpose(self.rnn, [1, 0, 2])
-        self.gtTexts = tf.SparseTensor(tf.placeholder(tf.int64, shape=[None, 2]),
+        self.targets = tf.SparseTensor(tf.placeholder(tf.int64, shape=[None, 2]),
                                        tf.placeholder(tf.int32, [None]),
                                        tf.placeholder(tf.int64, [2]))
 
         # Calculate loss for the current batch
         self.sequenceLength = tf.placeholder(tf.int32, [None])
-        loss = tf.nn.ctc_loss(labels=self.gtTexts,
+        loss = tf.nn.ctc_loss(labels=self.targets,
                               inputs=self.ctc,
                               sequence_length=self.sequenceLength,
                               ctc_merge_repeated=True)
@@ -126,7 +126,7 @@ class Model(object):
         # Calculate loss for each image to calculate label probability
         self.ctcInput = tf.placeholder(tf.float32,
                                        shape=[Model.maxTextLength, None, len(self.chars) + 1])
-        self.imageLoss = tf.nn.ctc_loss(labels=self.gtTexts,
+        self.imageLoss = tf.nn.ctc_loss(labels=self.targets,
                                         inputs=self.ctcInput,
                                         sequence_length=self.sequenceLength,
                                         ctc_merge_repeated=True)
@@ -188,7 +188,7 @@ class Model(object):
     # Trains a batch of training set through the neural network
     def trainBatch(self, batch):
         batchItemCount = len(batch.imgs)
-        sparse = self.generateSparse(batch.gtTexts)
+        sparse = self.generateSparse(batch.targets)
 
         # Decaying learning rate
         if self.trainedBatches < 10:
@@ -202,7 +202,7 @@ class Model(object):
         fetches = [self.optimizer, self.loss]
         feed = {
             self.inputImgs: batch.imgs,
-            self.gtTexts: sparse,
+            self.targets: sparse,
             self.sequenceLength: [Model.maxTextLength] * batchItemCount,
             self.learningRate: rate,
             self.isTraining: True
