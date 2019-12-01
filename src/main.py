@@ -5,7 +5,7 @@ import tkinter as tk
 import cv2 as cv
 
 from classes.Model import Model
-from classes.ImageLoader import cleanImage
+from classes.ImageLoader import prepareImage
 from classes.Batch import Batch
 
 # Model
@@ -184,8 +184,8 @@ def mousePressed(root, canvas, event, state):
 def analyzeText(state):
     model = Model(open("../model/chars.txt").read(), mustRestore=True)
     img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
-    cleanedImg = cleanImage(img, Model.imgSize)
-    batch = Batch(None, [cleanedImg])
+    img = prepareImage(img, Model.imgSize)
+    batch = Batch([img], None)
     text = model.detectBatch(batch)
     state.text = text[0]
 

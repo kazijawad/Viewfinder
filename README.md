@@ -1,6 +1,6 @@
 # Viewfinder
 
-Viewfinder is an optical character recognition program that analyzes written math problems and solves for the variables. The user will have the option to upload an image, which can then be solved for through a trained neural network.
+Viewfinder is an optical character recognition program that analyzes handwritten text and provides text analysis on it. The user will have the option to upload an image, which will be fed through a trained neural network.
 
 ## Getting Started
 

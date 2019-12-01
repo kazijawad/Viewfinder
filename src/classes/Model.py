@@ -3,9 +3,15 @@
 import numpy as np
 import tensorflow as tf
 
-# Simple Tensorflow Model for Handwritten Text Recognition
+'''
+Handwritten Text Recognition Model
+The model is a convolutional neural network that is built using Tensorflow. The
+dataset is the IAM dataset for handwriting recognition. Through the dataset,
+we can do supervised learning, as they provide the target values. A standard
+batch size of 64 was used.
+'''
 class Model(object):
-    batchSize = 50
+    batchSize = 64
     imgSize = (128, 32)
     maxTextLength = 32
 
@@ -14,9 +20,9 @@ class Model(object):
         self.chars = chars
         self.mustRestore = mustRestore
         self.dump = dump
-        self.snapCount = 0
+        self.snapshotCount = 0
 
-        # To determine whether to use normalization over a batch
+        # Determines whether to use normalization over a batch
         self.isTraining = tf.placeholder(tf.bool, name="isTraining")
 
         # Input image batch
@@ -145,7 +151,7 @@ class Model(object):
 
         return session, saver
 
-    # Creates a sparse for training purposes
+    # Creates a sparse for training
     def generateSparse(self, texts):
         indexes = []
         values = []
@@ -179,7 +185,7 @@ class Model(object):
             text.append(str().join(labelChars))
         return text
 
-    # Trains neural network
+    # Trains a batch of training set through the neural network
     def trainBatch(self, batch):
         batchItemCount = len(batch.imgs)
         sparse = self.generateSparse(batch.gtTexts)
@@ -205,7 +211,7 @@ class Model(object):
         _, loss = self.session.run(fetches, feed_dict=feed)
         return loss
 
-    # Feeds input into a trained neural network for a result
+    # Feeds validation batch into a trained neural network
     def detectBatch(self, batch):
         batchItemCount = len(batch.imgs)
         evals = [self.decoder] + []
@@ -222,5 +228,5 @@ class Model(object):
 
     # Saves a snapshot of the model as a file
     def save(self):
-        self.snapCount += 1
-        self.saver.save(self.session, "../model/snapshot", global_step=self.snapCount)
+        self.snapshotCount += 1
+        self.saver.save(self.session, "../model/snapshot", global_step=self.snapshotCount)

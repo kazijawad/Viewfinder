@@ -1,7 +1,7 @@
 import cv2 as cv
 import editdistance
 
-from classes.ImageLoader import cleanImage, ImageLoader
+from classes.ImageLoader import prepareImage, ImageLoader
 from classes.Batch import Batch
 from classes.Model import Model
 
@@ -21,7 +21,7 @@ def train(model, loader):
         print("Training Neural Network")
         loader.trainingSet()
         while loader.hasNext():
-            iterationInfo = loader.getInteratorInfo()
+            iterationInfo = loader.getIteration()
             batch = loader.getNext()
             loss = model.trainBatch(batch)
             print("Batch:", iterationInfo[0], "/", iterationInfo[1],
@@ -45,7 +45,7 @@ def train(model, loader):
             print(f"No improvements since {earlyStop} epochs. Training stopped.")
             break
 
-# Validates a small percentage of the dataset against the neural network
+# Validates a portion of the dataset against the trained neural network
 def validate(model, loader):
     print("Validating Neural Network")
     loader.validationSet()
@@ -54,7 +54,7 @@ def validate(model, loader):
     okWordCount = 0
     totalWordCount = 0
     while loader.hasNext():
-        iterationInfo = loader.getInteratorInfo()
+        iterationInfo = loader.getIteration()
         print("Batch:", iterationInfo[0], "/", iterationInfo[1])
         batch = loader.getNext()
         text = model.detectBatch(batch)
@@ -78,24 +78,10 @@ def validate(model, loader):
     print(f"Character Error Rate: {charErrorRate * 100}. Accuracy: {accuracy * 100}")
     return charErrorRate
 
-# Detects handwritten text using a trained neural network
-def detect(model, imgPath):
-    img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
-    cleanedImg = cleanImage(img, Model.imgSize)
-    batch = Batch(None, [cleanedImg])
-    text = model.detectBatch(batch)
-    return text
-
-# Rotates between training the model or using the model --> Mainly for testing purposes
-def main(training=True):
-    if training:
-        loader = ImageLoader("../data/", Model.batchSize, Model.imgSize, Model.maxTextLength)
-        model = Model(loader.chars)
-        train(model, loader)
-    else:
-        model = Model(open("../model/chars.txt").read(), mustRestore=True)
-        recognizedText = detect(model, "../data/print.jpg")
-        print(recognizedText)
+def main():
+    loader = ImageLoader("../data/", Model.batchSize, Model.imgSize, Model.maxTextLength)
+    model = Model(loader.chars)
+    train(model, loader)
 
 if __name__ == "__main__":
     main()
