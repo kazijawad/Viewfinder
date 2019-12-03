@@ -1,6 +1,6 @@
 # Viewfinder
 
-Viewfinder is an optical character recognition program that analyzes handwritten text and provides text analysis on it. The user will have the option to upload an image, which will be fed through a trained neural network.
+Viewfinder is an optical character recognition program that analyzes handwritten sentences and provides generated text in the form of Shakespearean writing.
 
 ## Getting Started
 
@@ -45,6 +45,7 @@ Kazi Jawad
 ## Acknowledgments
 
 * [15-112 Fundamentals of Programming and Computer Science](https://www.cs.cmu.edu/~112)
-* [3Blue1Brown](https://www.3blue1brown.com/neural-networks)
-* [Harald Scheidl](https://towardsdatascience.com/2326a3487cd5)
+* [3Blue1Brown's Neural Network Series](https://www.3blue1brown.com/neural-networks)
+* [Handwritten Text Recognition System Design](https://towardsdatascience.com/2326a3487cd5)
+* [Text Generation with a Recurrent Neural Network](https://www.tensorflow.org/tutorials/text/text_generation)
 * [IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
