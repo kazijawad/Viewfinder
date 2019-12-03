@@ -119,7 +119,8 @@ def mousePressed(root, canvas, event, state):
     redrawAll(root, canvas, state)
 
 def analyzeText(state):
-    model = Model(open("../model/chars.txt").read(), mustRestore=True)
+    chars = open("../model/chars.txt").read()
+    model = Model(chars, mustRestore=True)
     img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
     img = prepareImage(img, Model.imgSize)
     batch = Batch([img], None)
