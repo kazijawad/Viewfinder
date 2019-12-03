@@ -3,8 +3,8 @@ import random
 import numpy as np
 import cv2 as cv
 
-from Sample import Sample
-from Batch import Batch
+from .Sample import Sample
+from .Batch import Batch
 
 '''
 Prepares the image for the neural network. To yield the most consistent

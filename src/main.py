@@ -17,6 +17,8 @@ class State(object):
         self.width = 800
         self.margin = 25
         self.timerDelay = 50
+        self.inputText = ""
+        self.generatedText = ""
 
 # View
 def startModeRedrawAll(canvas, state):
@@ -65,7 +67,7 @@ def uploadModeRedrawAll(canvas, state):
     # File Text
     if state.file != None:
         canvas.create_text(state.width // 2, state.height // 2 - 100,
-                           text={state.file}, font="Helvetica 12 normal",
+                           text=state.file, font="Helvetica 14 normal",
                            fill="#ffd800", anchor="s")
 
     # Analyze Button
@@ -79,12 +81,39 @@ def uploadModeRedrawAll(canvas, state):
                        text="Analyze Image", font="Helvetica 21 bold",
                        fill="#ffd800")
 
+def resultsModeRedrawAll(canvas, state):
+    # Draw Background
+    canvas.create_rectangle(0, 0, state.width, state.height,
+                            fill="#004445")
+
+    # Draw Input Heading
+    canvas.create_text(state.margin, state.margin,
+                       text="Input Text", font="Helvetica 18 bold",
+                       anchor="nw", fill="#2c7873")
+
+    # Draw Input Text
+    canvas.create_text(state.margin, state.margin + 50,
+                       text=state.inputText, font="Helvetica 21 normal",
+                       anchor="nw", fill="#ffd800")
+
+    # Draw Output Heading
+    canvas.create_text(state.margin, state.margin + 100,
+                       text="Generated Text", font="Helvetica 18 bold",
+                       anchor="nw", fill="#2c7873")
+
+    # Draw Output Text
+    canvas.create_text(state.margin, state.margin + 150,
+                       text=state.generatedText, font="Helvetica 12 normal",
+                       anchor="nw", fill="#ffd800")
+
 def redrawAll(root, canvas, state):
     canvas.delete("all")
     if state.mode == "start":
         startModeRedrawAll(canvas, state)
     elif state.mode == "upload":
         uploadModeRedrawAll(canvas, state)
+    elif state.mode == "results":
+        resultsModeRedrawAll(canvas, state)
 
 def timerFired(root, canvas, state):
     redrawAll(root, canvas, state)
@@ -109,7 +138,8 @@ def uploadMousePressed(event, state):
           and event.y > state.height - state.margin - 60
           and event.y < state.height - state.margin
           and state.file != None):
-        analyzeText(state)
+        generateText(state)
+        state.mode = "results"
 
 def mousePressed(root, canvas, event, state):
     if state.mode == "start":
@@ -118,14 +148,48 @@ def mousePressed(root, canvas, event, state):
         uploadMousePressed(event, state)
     redrawAll(root, canvas, state)
 
-def analyzeText(state):
-    chars = open("../model/chars.txt").read()
-    model = Model(chars, mustRestore=True)
-    img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
-    img = prepareImage(img, Model.imgSize)
-    batch = Batch([img], None)
-    text = model.validateBatch(batch)
-    state.text = text[0]
+def generateText(state):
+    # chars = open("./models/WordRecognition/data/chars.txt").read()
+    # model = Model(chars, mustRestore=True)
+    # img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
+    # img = prepareImage(img, Model.imgSize)
+    # batch = Batch([img], None)
+    # text = model.validateBatch(batch)
+    # state.inputText = text[0]
+    state.inputText = "little"
+    state.generatedText = '''
+ROMEO: little! I am herset me assure.
+
+GONZALO:
+He'll be slanderous free;
+And he's warm at thy word, sir: this is come nature,
+Put that strenks a brib; when the very neck Lewer is both
+For petty us: the mocking of himself than yet
+unboandliant. Thou know'd a windows who rath,
+Should I away.
+
+BIANly be gone: then, and begin
+The providence great.
+
+CAPTISTA:
+Well neither
+Left amendly you of my quarrel?
+
+GROMIO:
+Yes, both these time.
+
+ANTONIO:
+Well, go we are agues no cormeted till Kath a faultheeght
+I would bo heaven, bestrewith you you are well.
+
+PROSPERO:
+No; forswear it.
+
+TRANIO:
+Why, this shapp'd olves! hath had like a thou not queen;
+Faith, lest wont thou now,'STONTIO:
+Nay, no, there teeks the most of his own.
+'''
 
 def main():
     # Create Instance and State

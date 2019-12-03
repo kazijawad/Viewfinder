@@ -1,7 +1,8 @@
 # Model Design: https://towardsdatascience.com/build-a-handwritten-text-recognition-system-using-tensorflow-2326a3487cd5
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 '''
 Handwritten Text Recognition Model
@@ -23,7 +24,7 @@ class Model(object):
         self.snapshotCount = 0
 
         # Determines whether to use normalization over a batch
-        self.isTraining = tf.placeholder(tf.bool, name="isTraining")
+        self.isTraining = tf.placeholder(tf.bool, name="is_train")
 
         # Input image batch
         self.inputImgs = tf.placeholder(tf.float32,
@@ -40,7 +41,7 @@ class Model(object):
         self.trainedBatches = 0
         self.learningRate = tf.placeholder(tf.float32, shape=[])
         self.updateOps = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.compat.v1.control_dependencies(self.updateOps):
+        with tf.control_dependencies(self.updateOps):
             self.optimizer = tf.train.RMSPropOptimizer(self.learningRate).minimize(self.loss)
 
         self.session, self.saver = self.setupTF()
@@ -87,12 +88,12 @@ class Model(object):
         layerCount = 2
         cells = []
         for _ in range(layerCount):
-            lstmCell = tf.contrib.rnn.LSTMCell(num_units=hiddenCount,
+            lstmCell = tf.nn.rnn_cell.LSTMCell(num_units=hiddenCount,
                                                state_is_tuple=True)
             cells.append(lstmCell)
 
         # Stack cells into RNN
-        stack = tf.contrib.rnn.MultiRNNCell(cells, state_is_tuple=True)
+        stack = tf.nn.rnn_cell.MultiRNNCell(cells, state_is_tuple=True)
 
         # Bidirectional RNN
         (forward, backward), _ = tf.nn.bidirectional_dynamic_rnn(cell_fw=stack,
@@ -139,13 +140,14 @@ class Model(object):
     def setupTF(self):
         session = tf.Session()
         saver = tf.train.Saver(max_to_keep=1)
-        snapshot = tf.train.latest_checkpoint("../model/")
+        # snapshot = tf.train.latest_checkpoint("../../../models/")
+        snapshot = True
 
         if self.mustRestore and not snapshot:
             raise Exception("No saved model found")
 
         if snapshot:
-            saver.restore(session, snapshot)
+            saver.restore(session, "/Users/kazijawad/Documents/Projects/Viewfinder/models/snapshot-38.index")
         else:
             session.run(tf.global_variables_initializer())
 
@@ -229,4 +231,4 @@ class Model(object):
     # Saves a snapshot of the model as a file
     def save(self):
         self.snapshotCount += 1
-        self.saver.save(self.session, "../model/snapshot", global_step=self.snapshotCount)
+        self.saver.save(self.session, "/Users/kazijawad/Documents/Projects/Viewfinder/models", global_step=self.snapshotCount)
