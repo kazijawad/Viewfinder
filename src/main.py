@@ -17,6 +17,8 @@ class State(object):
         self.width = 800
         self.margin = 25
         self.timerDelay = 50
+        self.previousMode = ""
+        self.currentMode = "start"
         self.inputText = ""
         self.generatedText = ""
 
@@ -27,22 +29,20 @@ def startModeRedrawAll(canvas, state):
                             fill="#004445")
 
     # Draw Heading
-    canvas.create_text(state.width // 2, state.height // 3 - 25,
-                       text="Welcome to Viewfinder!",
-                       font="Helvetica 48 bold",
-                       fill="#ffd800")
-    
+    canvas.create_text(state.width // 2, state.height // 2 - 100,
+                       text="Welcome to Viewfinder!", anchor="s",
+                       font="Helvetica 48 bold", fill="#ffd800")
+
     # Draw Subheading
-    canvas.create_text(state.width // 2, state.height // 3 + 50,
-                       text="A handwritten code analysis tool for debugging.",
-                       font="Helvetica 21 normal",
-                       fill="#ffd800")
+    canvas.create_text(state.width // 2, state.height // 2 - 50,
+                       text="A language model for generating paragraphs of text.",
+                       anchor="s", font="Helvetica 21 normal", fill="#ffd800")
 
     # Draw Button
-    canvas.create_rectangle(state.width // 2 - 100, state.height // 2,
-                            state.width // 2 + 100, state.height // 2 + 60,
+    canvas.create_rectangle(state.width // 2 - 100, state.height // 2 + 50,
+                            state.width // 2 + 100, state.height // 2 + 110,
                             fill="#2c7873", outline="")
-    canvas.create_text(state.width // 2, state.height // 2 + 30,
+    canvas.create_text(state.width // 2, state.height // 2 + 80,
                        text="START", font="Helvetica 16 bold",
                        fill="#ffd800")
 
@@ -78,7 +78,7 @@ def uploadModeRedrawAll(canvas, state):
                             fill="#2c7873", outline="")
     canvas.create_text(state.width // 2,
                        state.height - state.margin - 30,
-                       text="Analyze Image", font="Helvetica 21 bold",
+                       text="Generate Text", font="Helvetica 21 bold",
                        fill="#ffd800")
 
 def resultsModeRedrawAll(canvas, state):
@@ -106,24 +106,46 @@ def resultsModeRedrawAll(canvas, state):
                        text=state.generatedText, font="Helvetica 12 normal",
                        anchor="nw", fill="#ffd800")
 
-def redrawAll(root, canvas, state):
+    # Draw Back Button
+    canvas.create_rectangle(state.margin,
+                            state.height - state.margin - 60,
+                            state.margin + 120,
+                            state.height - state.margin,
+                            fill="#2c7873", outline="")
+    canvas.create_text(state.margin + 60,
+                       state.height - state.margin - 30,
+                       text="Home", font="Helvetica 21 bold",
+                       fill="#ffd800")
+
+    # Draw Download Button
+    canvas.create_rectangle(state.width - state.margin - 180,
+                            state.height - state.margin - 60,
+                            state.width - state.margin,
+                            state.height - state.margin,
+                            fill="#2c7873", outline="")
+    canvas.create_text(state.width - state.margin - 90,
+                       state.height - state.margin - 30,
+                       text="Download", font="Helvetica 21 bold",
+                       fill="#ffd800")
+
+def redrawAll(canvas, state):
     canvas.delete("all")
-    if state.mode == "start":
+    if state.currentMode == "start":
         startModeRedrawAll(canvas, state)
-    elif state.mode == "upload":
+    elif state.currentMode == "upload":
         uploadModeRedrawAll(canvas, state)
-    elif state.mode == "results":
+    elif state.currentMode == "results":
         resultsModeRedrawAll(canvas, state)
 
-def timerFired(root, canvas, state):
-    redrawAll(root, canvas, state)
+def timerFired(canvas, state):
+    redrawAll(canvas, state)
     canvas.after(state.timerDelay, timerFired, canvas, state)
 
 # Controller
 def startMousePressed(event, state):
     if (event.x > state.width // 2 - 100 and event.x < state.width // 2 + 100 and
-        event.y > state.height // 2 and event.y < state.height // 2 + 60):
-        state.mode = "upload"
+        event.y > state.height // 2 + 50 and event.y < state.height // 2 + 110):
+        state.currentMode = "upload"
 
 def uploadMousePressed(event, state):
     if (event.x > state.width // 2 - 120
@@ -139,14 +161,30 @@ def uploadMousePressed(event, state):
           and event.y < state.height - state.margin
           and state.file != None):
         generateText(state)
-        state.mode = "results"
+        state.currentMode = "results"
 
-def mousePressed(root, canvas, event, state):
-    if state.mode == "start":
+def resultsMousePressed(event, state):
+    if (event.x > state.margin
+        and event.x < state.margin + 120
+        and event.y > state.height - state.margin - 60
+        and event.y < state.height - state.margin):
+        state.currentMode = "start"
+    elif (event.x > state.width - state.margin - 180
+          and event.x < state.width - state.margin
+          and event.y > state.height - state.margin - 60
+          and event.y < state.height - state.margin):
+        outputFile = open("generated.txt", "w+")
+        outputFile.write(state.generatedText)
+        outputFile.close()
+
+def mousePressed(canvas, event, state):
+    if state.currentMode == "start":
         startMousePressed(event, state)
-    elif state.mode == "upload":
+    elif state.currentMode == "upload":
         uploadMousePressed(event, state)
-    redrawAll(root, canvas, state)
+    elif state.currentMode == "results":
+        resultsMousePressed(event, state)
+    redrawAll(canvas, state)
 
 def generateText(state):
     # chars = open("./models/WordRecognition/data/chars.txt").read()
@@ -194,7 +232,7 @@ Nay, no, there teeks the most of his own.
 def main():
     # Create Instance and State
     root = Tk()
-    root.wm_title("Viewfinder - Handwritten Code Analysis")
+    root.wm_title("Viewfinder - Language Text Generation")
     root.resizable(height=False, width=False)
     state = State()
 
@@ -204,10 +242,10 @@ def main():
     canvas.pack()
 
     # Event Handling
-    root.bind("<Button-1>", lambda event: mousePressed(root, canvas, event, state))
+    root.bind("<Button-1>", lambda event: mousePressed(canvas, event, state))
 
     # Loop
-    timerFired(root, canvas, state)
+    timerFired(canvas, state)
     root.mainloop()
 
 if __name__ == "__main__":

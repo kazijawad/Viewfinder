@@ -1,6 +1,6 @@
 # Viewfinder
 
-Viewfinder is an optical character recognition program that analyzes handwritten sentences and provides generated text in the form of Shakespearean writing.
+Viewfinder is an optical character recognition program that analyzes handwritten text and provides generated text in the form of Shakespearean writing.
 
 ## Getting Started
 
