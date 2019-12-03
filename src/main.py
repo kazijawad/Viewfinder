@@ -4,9 +4,9 @@ from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk
 import cv2 as cv
 
-from classes.Model import Model
-from classes.ImageLoader import prepareImage
-from classes.Batch import Batch
+from models.WordRecognition.Model import Model
+from models.WordRecognition.ImageLoader import prepareImage
+from models.WordRecognition.Batch import Batch
 
 # Model
 class State(object):
