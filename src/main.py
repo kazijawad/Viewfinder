@@ -4,9 +4,7 @@ from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk
 import cv2 as cv
 
-from models.WordRecognition.Model import Model
-from models.WordRecognition.ImageLoader import prepareImage
-from models.WordRecognition.Batch import Batch
+from models.TextGeneration.Model import TextGeneration
 
 # Model
 class State(object):
@@ -195,39 +193,10 @@ def generateText(state):
     # text = model.validateBatch(batch)
     # state.inputText = text[0]
     state.inputText = "little"
-    state.generatedText = '''
-ROMEO: little! I am herset me assure.
-
-GONZALO:
-He'll be slanderous free;
-And he's warm at thy word, sir: this is come nature,
-Put that strenks a brib; when the very neck Lewer is both
-For petty us: the mocking of himself than yet
-unboandliant. Thou know'd a windows who rath,
-Should I away.
-
-BIANly be gone: then, and begin
-The providence great.
-
-CAPTISTA:
-Well neither
-Left amendly you of my quarrel?
-
-GROMIO:
-Yes, both these time.
-
-ANTONIO:
-Well, go we are agues no cormeted till Kath a faultheeght
-I would bo heaven, bestrewith you you are well.
-
-PROSPERO:
-No; forswear it.
-
-TRANIO:
-Why, this shapp'd olves! hath had like a thou not queen;
-Faith, lest wont thou now,'STONTIO:
-Nay, no, there teeks the most of his own.
-'''
+    model = TextGeneration("shakespeare.txt",
+                           "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
+    model.predictModel(state.inputText)
+    print(model.generatedText)
 
 def main():
     # Create Instance and State

@@ -70,11 +70,6 @@ class TextGeneration(object):
     def predictModel(self, startString):
         TextGeneration.batchSize = 1
         self.buildModel()
-        self.model.load_weights("modelWeights.h5")
+        self.model.load_weights("./models/TextGeneration/modelWeights.h5")
         self.model.build(tf.TensorShape([1, None]))
         self.generatedText = self.generateText(startString)
-
-if __name__ == "__main__":
-    model = TextGeneration("shakespeare.txt",
-                           "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
-    model.trainModel()
