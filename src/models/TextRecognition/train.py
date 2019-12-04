@@ -3,7 +3,7 @@ import editdistance
 
 from ImageLoader import ImageLoader
 from Batch import Batch
-from Model import Model
+from Model import TextRecognition
 
 # Trains the neural network using the IAM dataset
 def train(model, loader):
@@ -34,7 +34,7 @@ def train(model, loader):
             bestCharErrorRate = charErrorRate
             noImprovementSince = 0
             model.save()
-            file = open("/Users/kazijawad/Documents/Projects/Viewfinder/models/accuracy.txt", "w")
+            file = open("./snapshots/accuracy.txt", "w")
             file.write(f"Validation Character Error Rate: {charErrorRate * 100}")
             file.close()
         else:
@@ -80,8 +80,8 @@ def validate(model, loader):
 
 def main():
     loader = ImageLoader("./data/",
-                         Model.batchSize, Model.imgSize, Model.maxTextLength)
-    model = Model(loader.chars)
+                         TextRecognition.batchSize, TextRecognition.imgSize, TextRecognition.maxTextLength)
+    model = TextRecognition(loader.chars)
     train(model, loader)
 
 if __name__ == "__main__":

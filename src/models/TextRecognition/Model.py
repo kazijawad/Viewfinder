@@ -1,7 +1,8 @@
 # Model Design: https://towardsdatascience.com/build-a-handwritten-text-recognition-system-using-tensorflow-2326a3487cd5
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 '''
 Handwritten Text Recognition Model
@@ -10,7 +11,7 @@ dataset is the IAM dataset for handwriting recognition. Through the dataset,
 we can do supervised learning, as they provide the target values. A standard
 batch size of 64 was used.
 '''
-class Model(object):
+class TextRecognition(object):
     batchSize = 64
     imgSize = (128, 32)
     maxTextLength = 32
@@ -28,8 +29,8 @@ class Model(object):
         # Input image batch
         self.inputImgs = tf.placeholder(tf.float32,
                                         shape=(None,
-                                               Model.imgSize[0],
-                                               Model.imgSize[1]))
+                                               TextRecognition.imgSize[0],
+                                               TextRecognition.imgSize[1]))
 
         # Setup different layers of the neural network
         self.setupCNN()
@@ -125,7 +126,7 @@ class Model(object):
 
         # Calculate loss for each image to calculate label probability
         self.ctcInput = tf.placeholder(tf.float32,
-                                       shape=[Model.maxTextLength, None, len(self.chars) + 1])
+                                       shape=[TextRecognition.maxTextLength, None, len(self.chars) + 1])
         self.imageLoss = tf.nn.ctc_loss(labels=self.targets,
                                         inputs=self.ctcInput,
                                         sequence_length=self.sequenceLength,
@@ -139,13 +140,13 @@ class Model(object):
     def setupTF(self):
         session = tf.Session()
         saver = tf.train.Saver(max_to_keep=1)
-        snapshot = tf.train.latest_checkpoint("./snapshots/")
+        snapshot = tf.train.latest_checkpoint("./models/TextRecognition/snapshots/")
 
         if self.mustRestore and not snapshot:
             raise Exception("No saved model found")
 
         if snapshot:
-            saver.restore(session, "./snapshots/snapshot")
+            saver.restore(session, snapshot)
         else:
             session.run(tf.global_variables_initializer())
 
@@ -203,7 +204,7 @@ class Model(object):
         feed = {
             self.inputImgs: batch.imgs,
             self.targets: sparse,
-            self.sequenceLength: [Model.maxTextLength] * batchItemCount,
+            self.sequenceLength: [TextRecognition.maxTextLength] * batchItemCount,
             self.learningRate: rate,
             self.isTraining: True
         }
@@ -217,7 +218,7 @@ class Model(object):
         evals = [self.decoder] + []
         feed = {
             self.inputImgs: batch.imgs,
-            self.sequenceLength: [Model.maxTextLength] * batchItemCount,
+            self.sequenceLength: [TextRecognition.maxTextLength] * batchItemCount,
             self.isTraining: False
         }
 

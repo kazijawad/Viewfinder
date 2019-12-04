@@ -4,6 +4,10 @@ from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk
 import cv2 as cv
 
+from models.TextRecognition.Model import TextRecognition
+from models.TextRecognition.ImageLoader import prepareImage
+from models.TextRecognition.Batch import Batch
+
 from models.TextGeneration.Model import TextGeneration
 
 # Model
@@ -185,18 +189,17 @@ def mousePressed(canvas, event, state):
     redrawAll(canvas, state)
 
 def generateText(state):
-    # chars = open("./models/WordRecognition/data/chars.txt").read()
-    # model = Model(chars, mustRestore=True)
-    # img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
-    # img = prepareImage(img, Model.imgSize)
-    # batch = Batch([img], None)
-    # text = model.validateBatch(batch)
-    # state.inputText = text[0]
-    state.inputText = "little"
+    chars = open("./models/TextRecognition/data/chars.txt").read()
+    model = TextRecognition(chars, mustRestore=True)
+    img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
+    img = prepareImage(img, TextRecognition.imgSize)
+    batch = Batch([img], None)
+    text = model.validateBatch(batch)
+    state.inputText = text[0]
     model = TextGeneration("shakespeare.txt",
                            "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
     model.predictModel(state.inputText)
-    print(model.generatedText)
+    state.generatedText = model.generatedText
 
 def main():
     # Create Instance and State

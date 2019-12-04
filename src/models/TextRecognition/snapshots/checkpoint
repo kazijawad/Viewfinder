@@ -1,2 +1,2 @@
-model_checkpoint_path: "/Users/kazijawad/Documents/Projects/Viewfinder/models/snapshot-15"
-all_model_checkpoint_paths: "/Users/kazijawad/Documents/Projects/Viewfinder/models/snapshot-15"
+model_checkpoint_path: "/Users/kazijawad/Documents/Projects/Viewfinder/src/models/TextRecognition/snapshots/snapshot-15"
+all_model_checkpoint_paths: "/Users/kazijawad/Documents/Projects/Viewfinder/src/models/TextRecognition/snapshots/snapshot-15"
