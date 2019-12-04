@@ -1,8 +1,7 @@
 # Model Design: https://towardsdatascience.com/build-a-handwritten-text-recognition-system-using-tensorflow-2326a3487cd5
 
 import numpy as np
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 
 '''
 Handwritten Text Recognition Model
@@ -140,14 +139,13 @@ class Model(object):
     def setupTF(self):
         session = tf.Session()
         saver = tf.train.Saver(max_to_keep=1)
-        # snapshot = tf.train.latest_checkpoint("../../../models/")
-        snapshot = True
+        snapshot = tf.train.latest_checkpoint("./snapshots/")
 
         if self.mustRestore and not snapshot:
             raise Exception("No saved model found")
 
         if snapshot:
-            saver.restore(session, "/Users/kazijawad/Documents/Projects/Viewfinder/models/snapshot-38.index")
+            saver.restore(session, "./snapshots/snapshot")
         else:
             session.run(tf.global_variables_initializer())
 
@@ -231,4 +229,4 @@ class Model(object):
     # Saves a snapshot of the model as a file
     def save(self):
         self.snapshotCount += 1
-        self.saver.save(self.session, "/Users/kazijawad/Documents/Projects/Viewfinder/models", global_step=self.snapshotCount)
+        self.saver.save(self.session, "./snapshots/snapshot", global_step=self.snapshotCount)

@@ -34,7 +34,7 @@ def train(model, loader):
             bestCharErrorRate = charErrorRate
             noImprovementSince = 0
             model.save()
-            file = open("../model/accuracy.txt", "w")
+            file = open("/Users/kazijawad/Documents/Projects/Viewfinder/models/accuracy.txt", "w")
             file.write(f"Validation Character Error Rate: {charErrorRate * 100}")
             file.close()
         else:
@@ -79,7 +79,8 @@ def validate(model, loader):
     return charErrorRate
 
 def main():
-    loader = ImageLoader("../../../data/", Model.batchSize, Model.imgSize, Model.maxTextLength)
+    loader = ImageLoader("./data/",
+                         Model.batchSize, Model.imgSize, Model.maxTextLength)
     model = Model(loader.chars)
     train(model, loader)
 

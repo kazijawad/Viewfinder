@@ -1,0 +1,1 @@
+Validation Character Error Rate: 16.755721791789117
