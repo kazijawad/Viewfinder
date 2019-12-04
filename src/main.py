@@ -1,14 +1,11 @@
 # Viewfinder - A Handwritten Math Problem Solver
 
+import sys
+
 from tkinter import Tk, Canvas, filedialog, Text
 import tkinter as tk
 import cv2 as cv
-
-from models.TextRecognition.Model import TextRecognition
-from models.TextRecognition.ImageLoader import prepareImage
-from models.TextRecognition.Batch import Batch
-
-from models.TextGeneration.Model import TextGeneration
+import tensorflow as tf
 
 # Model
 class State(object):
@@ -162,6 +159,7 @@ def uploadMousePressed(event, state):
           and event.y > state.height - state.margin - 60
           and event.y < state.height - state.margin
           and state.file != None):
+        recognizeText(state)
         generateText(state)
         state.currentMode = "results"
 
@@ -188,7 +186,11 @@ def mousePressed(canvas, event, state):
         resultsMousePressed(event, state)
     redrawAll(canvas, state)
 
-def generateText(state):
+def recognizeText(state):
+    from models.TextRecognition.Model import TextRecognition
+    from models.TextRecognition.ImageLoader import prepareImage
+    from models.TextRecognition.Batch import Batch
+
     chars = open("./models/TextRecognition/data/chars.txt").read()
     model = TextRecognition(chars, mustRestore=True)
     img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
@@ -196,6 +198,13 @@ def generateText(state):
     batch = Batch([img], None)
     text = model.validateBatch(batch)
     state.inputText = text[0]
+
+    tf.compat.v1.reset_default_graph()
+    tf.compat.v1.enable_eager_execution()
+
+def generateText(state):
+    from models.TextGeneration.Model import TextGeneration
+
     model = TextGeneration("shakespeare.txt",
                            "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
     model.predictModel(state.inputText)
