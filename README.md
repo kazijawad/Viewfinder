@@ -1,6 +1,6 @@
 # Viewfinder
 
-Viewfinder is an optical character recognition program that analyzes handwritten text and provides generated text in the form of Shakespearean writing.
+Viewfinder is an optical character recognition program that analyzes handwritten text and provides generated text in different writing styles.
 
 ## Getting Started
 
@@ -12,8 +12,10 @@ What things you need to install the software
 
 ```
 Python 3.6.x
-OpenCV 4.x.x
+OpenCV 3.4.x
 Tensorflow 2.x.x
+numpy 1.17.x
+editdistance 0.5.x
 ```
 
 ### Installing

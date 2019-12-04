@@ -34,7 +34,7 @@ def startModeRedrawAll(canvas, state):
 
     # Draw Subheading
     canvas.create_text(state.width // 2, state.height // 2 - 50,
-                       text="A language model for generating paragraphs of text.",
+                       text="A language model for generating text.",
                        anchor="s", font="Helvetica 21 normal", fill="#ffd800")
 
     # Draw Button
