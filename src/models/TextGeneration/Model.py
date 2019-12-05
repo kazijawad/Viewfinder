@@ -44,11 +44,11 @@ class TextGeneration(object):
     def loss(self, labels, logits):
         return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
 
-    def trainModel(self):
+    def trainModel(self, modelName):
         self.buildModel()
         self.model.compile(optimizer="adam", loss=self.loss)
         self.model.fit(self.dataset, epochs=TextGeneration.epochs)
-        self.model.save_weights("modelWeights.h5")
+        self.model.save_weights(f"{modelName.lower()}ModelWeights.h5")
 
     def generateText(self, startString, charCount):
         inputEval = [self.charToIndex[char] for char in startString]
@@ -66,9 +66,9 @@ class TextGeneration(object):
 
         return (startString + "".join(generatedText))
 
-    def predictModel(self, startString, charCount):
+    def predictModel(self, startString, charCount, modelName):
         TextGeneration.batchSize = 1
         self.buildModel()
-        self.model.load_weights("./models/TextGeneration/modelWeights.h5")
+        self.model.load_weights(f"./models/TextGeneration/{modelName.lower()}ModelWeights.h5")
         self.model.build(tf.TensorShape([1, None]))
         self.generatedText = self.generateText(startString, charCount)

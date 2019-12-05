@@ -20,7 +20,7 @@ class State(object):
         self.inputText = ""
         self.generatedText = ""
         self.charCount = 1000
-        self.writingStyle = "Juice WRLD"
+        self.writingStyle = "Shakespeare"
 
 # View
 def startModeRedrawAll(canvas, state):
@@ -98,23 +98,6 @@ def optionModeRedrawAll(canvas, state):
                            text="Nietzsche", font="Helvetica 21 bold",
                            fill="#2c7873")
 
-    # Draw Third Writing Style
-    canvas.create_rectangle(state.margin, state.margin + 310,
-                            state.margin + 200, state.margin + 390,
-                            fill="#2c7873", outline="")
-    if state.writingStyle == "Juice WRLD":
-        canvas.create_rectangle(state.margin, state.margin + 310,
-                                state.margin + 200, state.margin + 390,
-                                fill="#ffd800", outline="")
-
-    canvas.create_text(state.margin + 100, state.margin + 350,
-                       text="Juice WRLD", font="Helvetica 21 bold",
-                       fill="#ffd800")
-    if state.writingStyle == "Juice WRLD":
-        canvas.create_text(state.margin + 100, state.margin + 350,
-                           text="Juice WRLD", font="Helvetica 21 bold",
-                           fill="#2c7873")
-
     # Draw Title
     canvas.create_text(state.width // 2, state.margin, anchor="nw",
                        text="Character Amount", font="Helvetica 18 bold",
@@ -149,21 +132,6 @@ def optionModeRedrawAll(canvas, state):
     if state.charCount == 1000:
         canvas.create_text(state.width // 2 + 100, state.margin + 220,
                            text="1000", font="Helvetica 24 bold", fill="#2c7873")
-
-    # Draw Third Character Amount
-    canvas.create_rectangle(state.width // 2, state.margin + 310,
-                            state.width // 2 + 200, state.margin + 390,
-                            fill="#2c7873", outline="")
-    if state.charCount == 1500:
-        canvas.create_rectangle(state.width // 2, state.margin + 310,
-                                state.width // 2 + 200, state.margin + 390,
-                                fill="#ffd800", outline="")
-
-    canvas.create_text(state.width // 2 + 100, state.margin + 350,
-                       text="1500", font="Helvetica 24 bold", fill="#ffd800")
-    if state.charCount == 1500:
-        canvas.create_text(state.width // 2 + 100, state.margin + 350,
-                           text="1500", font="Helvetica 24 bold", fill="#2c7873")
 
     # Draw Back Button
     canvas.create_rectangle(state.margin, state.height - state.margin - 60,
@@ -326,11 +294,6 @@ def optionMousePressed(event, state):
           and event.y > state.margin + 180
           and event.y < state.margin + 260):
         state.writingStyle = "Nietzsche"
-    elif (event.x > state.margin
-          and event.x < state.margin + 200
-          and event.y > state.margin + 310
-          and event.y < state.margin + 390):
-        state.writingStyle = "Juice WRLD"
     elif (event.x > state.width // 2
           and event.x < state.width // 2 + 200
           and event.y > state.margin + 50
@@ -341,11 +304,6 @@ def optionMousePressed(event, state):
           and event.y > state.margin + 180
           and event.y < state.margin + 260):
         state.charCount = 1000
-    elif (event.x > state.width // 2
-          and event.x < state.width // 2 + 200
-          and event.y > state.margin + 310
-          and event.y < state.margin + 390):
-        state.charCount = 1500
 
 def uploadMousePressed(event, state):
     if (event.x > state.width // 2 - 120
@@ -411,11 +369,16 @@ def recognizeText(state):
 def generateText(state):
     from models.TextGeneration.Model import TextGeneration
 
-    model = TextGeneration("shakespeare.txt",
-                           "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
-    model.predictModel(f"ROMEO: {state.inputText},", state.charCount)
-    state.generatedText = model.generatedText
+    if state.writingStyle == "Shakespeare":
+        model = TextGeneration("shakespeare.txt",
+                               "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
+        model.predictModel(f"ROMEO: {state.inputText},", state.charCount, state.writingStyle)
+    elif state.writingStyle == "Nietzsche":
+        model = TextGeneration("nietzsche.txt",
+                               "https://s3.amazonaws.com/text-datasets/nietzsche.txt")
+        model.predictModel(state.inputText, state.charCount, state.writingStyle)
 
+    state.generatedText = model.generatedText
     tf.compat.v1.reset_default_graph()
     tf.compat.v1.disable_eager_execution()
 
