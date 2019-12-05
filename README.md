@@ -37,9 +37,11 @@ python3 main.py
 
 ### Recommended Installation
 
+The ideal scenario I have found to setup Viewfinder with Tensorflow and OpenCV is to use an Anaconda virtual environment. Through the environment, packages are very easy to manage and the environment can easily be removed later.
+
 ### User Flow
 
-### Intuition
+To test Viewfinder, trained neural networks are already provided in the source directory. In the root directory there are sample files with varying writing complexity to use as input. Please note, each writing style was trained using a different dataset and trained for a short period of time. Thus, the results of the text recognition and text generation may not be the best possible outcome.
 
 ## Built With
 
@@ -56,7 +58,6 @@ Kazi Jawad
 
 * [15-112 Fundamentals of Programming and Computer Science](https://www.cs.cmu.edu/~112)
 * [3Blue1Brown's Neural Network Series](https://www.3blue1brown.com/neural-networks)
-* [Handwritten Text Recognition System Design](https://towardsdatascience.com/2326a3487cd5)
+* [Handwritten Text Recognition System Design](https://arxiv.org/pdf/1507.05717.pdf)
 * [Text Generation with a Recurrent Neural Network](https://www.tensorflow.org/tutorials/text/text_generation)
 * [IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
-* [Viewfinder Icon](https://www.flaticon.com/authors/freepik)
