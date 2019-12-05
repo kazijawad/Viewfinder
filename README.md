@@ -33,6 +33,14 @@ cd src/
 python3 main.py
 ```
 
+## Usage
+
+### Recommended Installation
+
+### User Flow
+
+### Intuition
+
 ## Built With
 
 * [OpenCV](https://opencv.org/) - Computer Vision Library
@@ -51,3 +59,4 @@ Kazi Jawad
 * [Handwritten Text Recognition System Design](https://towardsdatascience.com/2326a3487cd5)
 * [Text Generation with a Recurrent Neural Network](https://www.tensorflow.org/tutorials/text/text_generation)
 * [IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
+* [Viewfinder Icon](https://www.flaticon.com/authors/freepik)

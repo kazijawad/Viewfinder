@@ -50,8 +50,7 @@ class TextGeneration(object):
         self.model.fit(self.dataset, epochs=TextGeneration.epochs)
         self.model.save_weights("modelWeights.h5")
 
-    def generateText(self, startString):
-        charCount = 1000
+    def generateText(self, startString, charCount):
         inputEval = [self.charToIndex[char] for char in startString]
         inputEval = tf.expand_dims(inputEval, 0)
         generatedText = []
@@ -67,9 +66,9 @@ class TextGeneration(object):
 
         return (startString + "".join(generatedText))
 
-    def predictModel(self, startString):
+    def predictModel(self, startString, charCount):
         TextGeneration.batchSize = 1
         self.buildModel()
         self.model.load_weights("./models/TextGeneration/modelWeights.h5")
         self.model.build(tf.TensorShape([1, None]))
-        self.generatedText = self.generateText(startString)
+        self.generatedText = self.generateText(startString, charCount)
