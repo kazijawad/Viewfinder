@@ -54,6 +54,14 @@ def startModeRedrawAll(canvas, state):
                        text="OPTIONS", font="Helvetica 16 bold",
                        fill="#ffd800")
 
+    # Draw Help Button
+    canvas.create_rectangle(state.width // 2 - 100, state.height // 2 + 230,
+                            state.width // 2 + 100, state.height // 2 + 290,
+                            fill="#2c7873", outline="")
+    canvas.create_text(state.width // 2, state.height // 2 + 260,
+                       text="HELP", font="Helvetica 16 bold",
+                       fill="#ffd800")
+
 def optionModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -132,6 +140,86 @@ def optionModeRedrawAll(canvas, state):
     if state.charCount == 1000:
         canvas.create_text(state.width // 2 + 100, state.margin + 220,
                            text="1000", font="Helvetica 24 bold", fill="#2c7873")
+
+    # Draw Back Button
+    canvas.create_rectangle(state.margin, state.height - state.margin - 60,
+                            state.margin + 120, state.height - state.margin,
+                            fill="#2c7873", outline="")
+    canvas.create_text(state.margin + 60, state.height - state.margin - 30,
+                       text="Back", font="Helvetica 21 bold", fill="#ffd800")
+
+def helpModeRedrawAll(canvas, state):
+    # Draw Background
+    canvas.create_rectangle(0, 0, state.width, state.height,
+                            fill="#004445")
+
+    # Draw Title
+    canvas.create_text(state.margin, state.margin, anchor="nw",
+                       text="Description", font="Helvetica 18 bold",
+                       fill="#2c7873")
+
+    # Draw Description
+    canvas.create_text(state.margin, state.margin + 25, anchor="nw",
+                       text='''
+Viewfinder is an optical character recognition program that analyzes handwritten
+text and provides generated text in different writing styles.
+''', font="Helvetica 16 bold", fill="#ffd800")
+
+    # Draw Title
+    canvas.create_text(state.margin, state.margin + 125, anchor="nw",
+                       text="Usage", font="Helvetica 18 bold", fill="#2c7873")
+
+    # Draw Usage
+    canvas.create_text(state.margin, state.margin + 150, anchor="nw",
+                       text='''
+To test Viewfinder, trained neural networks are already provided in the source directory.
+In the root directory there are sample files with varying writing complexity to use as input.
+Please note, each writing style was trained using a different dataset and trained for a short
+period of time. Thus, the results of the text recognition and text generation may not be the best
+possible outcome.
+''', font="Helvetica 16 bold", fill="#ffd800")
+
+    # Draw Title
+    canvas.create_text(state.margin, state.margin + 325, anchor="nw",
+                      text="Text Recognition Model", font="Helvetica 18 bold",
+                      fill="#2c7873")
+
+    # Draw Text Recognition Model
+    canvas.create_text(state.margin, state.margin + 350, anchor="nw",
+                       text='''
+Image
+↓
+Convolutional Neural Network
+↓
+Non-Linear RELU Activation Function
+↓
+Max Pooling Layer
+↓
+Long-Short Term Memory Recurrent Neural Network
+↓
+Connectionist Temporal Classification
+↓
+Text
+''', font="Helvetica 16 bold", fill="#ffd800")
+
+    # Draw Title
+    canvas.create_text(state.width // 2 + 25, state.margin + 325, anchor="nw",
+                       text="Text Generation Model", font="Helvetica 18 bold",
+                       fill="#2c7873")
+
+    # Draw Text Generation Model
+    canvas.create_text(state.width // 2 + 25, state.margin + 350, anchor="nw",
+                       text='''
+Text
+↓
+Embedding Function
+↓
+Gated Recurrent Neural Network
+↓
+Dense Function
+↓
+Generated Text
+''', font="Helvetica 16 bold", fill="#ffd800")
 
     # Draw Back Button
     canvas.create_rectangle(state.margin, state.height - state.margin - 60,
@@ -274,6 +362,8 @@ def redrawAll(canvas, state):
         startModeRedrawAll(canvas, state)
     elif state.currentMode == "option":
         optionModeRedrawAll(canvas, state)
+    elif state.currentMode == "help":
+        helpModeRedrawAll(canvas, state)
     elif state.currentMode == "upload":
         uploadModeRedrawAll(canvas, state)
     elif state.currentMode == "load":
@@ -297,6 +387,9 @@ def startMousePressed(event, state):
     elif (event.x > state.width // 2 - 100 and event.x < state.width // 2 + 100
           and event.y > state.height // 2 + 140 and event.y < state.height // 2 + 200):
         state.currentMode = "option"
+    elif (event.x > state.width // 2 - 100 and event.x < state.width // 2 + 100
+          and event.y > state.height // 2 + 230 and event.y < state.width // 2  + 290):
+        state.currentMode = "help"
 
 def optionMousePressed(event, state):
     if (event.x > state.margin
@@ -324,6 +417,13 @@ def optionMousePressed(event, state):
           and event.y > state.margin + 180
           and event.y < state.margin + 260):
         state.charCount = 1000
+
+def helpMousePressed(event, state):
+    if (event.x > state.margin
+        and event.x < state.margin + 120
+        and event.y > state.height - state.margin - 60
+        and event.y < state.height - state.margin):
+        state.currentMode = "start"
 
 def uploadMousePressed(event, state):
     if (event.x > state.width // 2 - 120
@@ -364,6 +464,8 @@ def mousePressed(canvas, event, state):
         startMousePressed(event, state)
     elif state.currentMode == "option":
         optionMousePressed(event, state)
+    elif state.currentMode == "help":
+        helpMousePressed(event, state)
     elif state.currentMode == "upload":
         uploadMousePressed(event, state)
     elif state.currentMode == "results":
@@ -397,6 +499,8 @@ def generateText(state):
         model = TextGeneration("nietzsche.txt",
                                "https://s3.amazonaws.com/text-datasets/nietzsche.txt")
         model.predictModel(state.inputText, state.charCount, state.writingStyle)
+
+    model.model.summary()
 
     state.generatedText = model.generatedText
     tf.compat.v1.reset_default_graph()
