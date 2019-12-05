@@ -8,6 +8,7 @@ import cv2 as cv
 import tensorflow as tf
 
 # Model
+# Handle App Settings
 class State(object):
     def __init__(self):
         self.mode = "start"
@@ -23,6 +24,7 @@ class State(object):
         self.writingStyle = "Shakespeare"
 
 # View
+# Draw Start Screen
 def startModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -62,6 +64,7 @@ def startModeRedrawAll(canvas, state):
                        text="HELP", font="Helvetica 16 bold",
                        fill="#ffd800")
 
+# Draws Option Screen
 def optionModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -148,6 +151,7 @@ def optionModeRedrawAll(canvas, state):
     canvas.create_text(state.margin + 60, state.height - state.margin - 30,
                        text="Back", font="Helvetica 21 bold", fill="#ffd800")
 
+# Draw Help Screen
 def helpModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -228,6 +232,7 @@ Generated Text
     canvas.create_text(state.margin + 60, state.height - state.margin - 30,
                        text="Back", font="Helvetica 21 bold", fill="#ffd800")
 
+# Draw Upload Screen
 def uploadModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -270,6 +275,7 @@ def uploadModeRedrawAll(canvas, state):
                        text="Analyze", font="Helvetica 21 bold",
                        fill="#ffd800")
 
+# Draw Loading Screen
 def loadModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -285,6 +291,7 @@ def loadModeRedrawAll(canvas, state):
                        anchor="n", text="This can take awhile!",
                        font="Helvetica 21 normal", fill="#2c7873")
 
+# Draw Results Screen
 def resultsModeRedrawAll(canvas, state):
     # Draw Background
     canvas.create_rectangle(0, 0, state.width, state.height,
@@ -356,6 +363,7 @@ def resultsModeRedrawAll(canvas, state):
                        text="Download", font="Helvetica 21 bold",
                        fill="#ffd800")
 
+# Mode Drawing Wrapper
 def redrawAll(canvas, state):
     canvas.delete("all")
     if state.currentMode == "start":
@@ -371,6 +379,7 @@ def redrawAll(canvas, state):
     elif state.currentMode == "results":
         resultsModeRedrawAll(canvas, state)
 
+# Timer Wrapper
 def timerFired(canvas, state):
     redrawAll(canvas, state)
     if state.currentMode == "load":
@@ -380,6 +389,7 @@ def timerFired(canvas, state):
     canvas.after(state.timerDelay, timerFired, canvas, state)
 
 # Controller
+# Handle Start Screen Mouse Events
 def startMousePressed(event, state):
     if (event.x > state.width // 2 - 100 and event.x < state.width // 2 + 100 and
         event.y > state.height // 2 + 50 and event.y < state.height // 2 + 110):
@@ -391,6 +401,7 @@ def startMousePressed(event, state):
           and event.y > state.height // 2 + 230 and event.y < state.width // 2  + 290):
         state.currentMode = "help"
 
+# Handle Option Screen Mouse Events
 def optionMousePressed(event, state):
     if (event.x > state.margin
         and event.x < state.margin + 120
@@ -418,6 +429,7 @@ def optionMousePressed(event, state):
           and event.y < state.margin + 260):
         state.charCount = 1000
 
+# Handle Help Screen Mouse Events
 def helpMousePressed(event, state):
     if (event.x > state.margin
         and event.x < state.margin + 120
@@ -425,6 +437,7 @@ def helpMousePressed(event, state):
         and event.y < state.height - state.margin):
         state.currentMode = "start"
 
+# Handle Upload Screen Mouse Events
 def uploadMousePressed(event, state):
     if (event.x > state.width // 2 - 120
         and event.x < state.width // 2 + 120
@@ -445,6 +458,7 @@ def uploadMousePressed(event, state):
           and state.file != None):
         state.currentMode = "load"
 
+# Handle Results Screen Mouse Events
 def resultsMousePressed(event, state):
     if (event.x > state.margin
         and event.x < state.margin + 120
@@ -459,6 +473,7 @@ def resultsMousePressed(event, state):
         outputFile.write(state.generatedText)
         outputFile.close()
 
+# Mouse Events Wrapper
 def mousePressed(canvas, event, state):
     if state.currentMode == "start":
         startMousePressed(event, state)
@@ -472,11 +487,14 @@ def mousePressed(canvas, event, state):
         resultsMousePressed(event, state)
     redrawAll(canvas, state)
 
+# Text Recognition Prediction Model
 def recognizeText(state):
+    # Import within the function for better user experience
     from models.TextRecognition.Model import TextRecognition
     from models.TextRecognition.ImageLoader import prepareImage
     from models.TextRecognition.Batch import Batch
 
+    # Feed the input file and predict text based on a trained model
     chars = open("./models/TextRecognition/data/chars.txt").read()
     model = TextRecognition(chars, mustRestore=True)
     img = cv.imread(state.file, cv.IMREAD_GRAYSCALE)
@@ -485,12 +503,16 @@ def recognizeText(state):
     text = model.validateBatch(batch)
     state.inputText = text[0]
 
+    # Flush out tensorflow session for next model
     tf.compat.v1.reset_default_graph()
     tf.compat.v1.enable_eager_execution()
 
+# Text Generation Prediction Model
 def generateText(state):
+    # Import within the function for better user experience
     from models.TextGeneration.Model import TextGeneration
 
+    # Feed the input text and predict text based on writing style
     if state.writingStyle == "Shakespeare":
         model = TextGeneration("shakespeare.txt",
                                "https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt")
@@ -500,12 +522,13 @@ def generateText(state):
                                "https://s3.amazonaws.com/text-datasets/nietzsche.txt")
         model.predictModel(state.inputText, state.charCount, state.writingStyle)
 
-    model.model.summary()
-
     state.generatedText = model.generatedText
+
+    # Flush out tensorflow session for next model
     tf.compat.v1.reset_default_graph()
     tf.compat.v1.disable_eager_execution()
 
+# Run Tkinter App
 def main():
     # Create Instance and State
     root = Tk()

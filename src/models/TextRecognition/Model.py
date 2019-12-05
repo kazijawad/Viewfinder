@@ -2,6 +2,9 @@
 
 import numpy as np
 import tensorflow.compat.v1 as tf
+
+# Must be initialized first globally to allow for a different
+# tensorflow package initialization
 tf.disable_v2_behavior()
 
 '''
