@@ -212,6 +212,26 @@ def resultsModeRedrawAll(canvas, state):
                        text=state.inputText, font="Helvetica 21 normal",
                        anchor="nw", fill="#ffd800")
 
+    # Draw Writing Style Heading
+    canvas.create_text(state.margin + 200, state.margin,
+                       text="Writing Style", font="Helvetica 18 bold",
+                       anchor="nw", fill="#2c7873")
+
+    # Draw Writing Style Text
+    canvas.create_text(state.margin + 200, state.margin + 50,
+                       text=state.writingStyle, font="Helvetica 21 normal",
+                       anchor="nw", fill="#ffd800")
+
+    # Draw Character Amount Heading
+    canvas.create_text(state.margin + 400, state.margin,
+                       text="Character Amount", font="Helvetica 18 bold",
+                       anchor="nw", fill="#2c7873")
+
+    # Draw Character Amount Text
+    canvas.create_text(state.margin + 400, state.margin + 50,
+                       text=state.charCount, font="Helvetica 21 normal",
+                       anchor="nw", fill="#ffd800")
+
     # Draw Output Heading
     canvas.create_text(state.margin, state.margin + 100,
                        text="Generated Text", font="Helvetica 18 bold",
