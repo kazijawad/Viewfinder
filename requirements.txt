@@ -2,4 +2,4 @@ editdistance==0.5.3
 h5py==2.9.0
 numpy==1.17.2
 opencv==3.4.2
-tensorflow==2.0.0
+tensorflow==2.0.1
